@@ -3,28 +3,27 @@ const bcrypt = require("bcrypt");
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const User = require("../models/user");
+const adminModel = require("../models/admin");
 
 module.exports = function(passport) {
   passport.use(
-    new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-      // Match user
-
-      User.findUserByEmail(email)
-        .then(user => {
-          if (!user) {
-            return done(null, false, { message: "Username chưa đăng ký!" });
+    new LocalStrategy({ usernameField: "username" }, (username, password, done) => {
+      // Match admin
+      adminModel.findAdminByUsername(username)
+        .then(admin => {
+          if (!admin) {
+            return done(null, false, { message: "Tài khoản chưa đăng ký!" });
           }
 
           // Match password
-          bcrypt.compare(password, user.password, (err, isMatch) => {
+          bcrypt.compare(password, admin.password, (err, isMatch) => {
             if (err) {
               throw err;
             }
             if (isMatch) {
-              return done(null, user);
+              return done(null, admin);
             } else {
-              return done(null, false, { message: "Mật khẩu không đúng!" });
+              return done(null, false, { message: "Thông tin đăng nhập không đúng!" });
             }
           });
         });
@@ -38,9 +37,9 @@ module.exports = function(passport) {
         secretOrKey: "your_jwt_secret"
       },
       function(jwtPayload, cb) {
-        return User.findUserById(jwtPayload._id)
-          .then(user => {
-            return cb(null, user);
+        return admin.findAdminByUsername(jwtPayload.username)
+          .then(admin => {
+            return cb(null, admin);
           })
           .catch(err => {
             return cb(err);
@@ -49,13 +48,13 @@ module.exports = function(passport) {
     )
   );
 
-  passport.serializeUser(function(user, done) {
-    done(null, user._id);
+  passport.serializeUser(function(admin, done) {
+    done(null, admin._id);
   });
 
   passport.deserializeUser(function(id, done) {
-    User.findUserById(jwtPayload._id).then( (err, user) =>{
-        done(null, user);
+    admin.findAdminByUsername(jwtPayload.username).then( (err, admin) =>{
+        done(null, admin);
       });
   });
 };

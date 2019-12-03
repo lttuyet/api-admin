@@ -12,7 +12,7 @@ var session = require("express-session");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-var userRouter = require("./routes/user");
+var adminRouter = require("./routes/admin");
 
 var app = express();
 
@@ -22,6 +22,10 @@ var allowCrossDomain = function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 };
+
+var cors=require('cors');
+
+app.use(cors());
 
 app.use(allowCrossDomain);
 
@@ -90,7 +94,7 @@ app.use(function(req, res, next) {
 });
 
 app.use("/users", usersRouter);
-app.use("/user", userRouter);
+app.use("/admin", adminRouter);
 app.use("/", passport.authenticate("jwt", { session: false }), indexRouter);
 
 // catch 404 and forward to error handler
