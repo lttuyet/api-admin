@@ -3,9 +3,9 @@ const bcrypt = require("bcrypt");
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const adminModel = require("../models/admin");
+const adminModel = require("../models/admins");
 
-module.exports = function(passport) {
+module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ usernameField: "username" }, (username, password, done) => {
       // Match admin
@@ -36,8 +36,8 @@ module.exports = function(passport) {
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
         secretOrKey: "your_jwt_secret"
       },
-      function(jwtPayload, cb) {
-        return admin.findAdminByUsername(jwtPayload.username)
+      function (jwtPayload, cb) {
+        return adminModel.findAdminByUsername(jwtPayload.username)
           .then(admin => {
             return cb(null, admin);
           })
@@ -48,13 +48,13 @@ module.exports = function(passport) {
     )
   );
 
-  passport.serializeUser(function(admin, done) {
+  passport.serializeUser(function (admin, done) {
     done(null, admin._id);
   });
 
-  passport.deserializeUser(function(id, done) {
-    admin.findAdminByUsername(jwtPayload.username).then( (err, admin) =>{
-        done(null, admin);
-      });
+  passport.deserializeUser(function (id, done) {
+    adminModel.findAdminById(id).then((err, admin) => {
+      done(null, admin);
+    });
   });
 };
