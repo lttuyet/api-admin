@@ -14,6 +14,18 @@ const findByName = async (_name) => {
 };
 exports.findByName = findByName;
 
+const findById = async (id) => {
+  try{
+    const res = await dbs.production.collection('tags').findOne({_id:ObjectId(id)});
+
+    return res;
+  }catch(e){
+    return false;
+  }
+  
+};
+exports.findById = findById;
+
 module.exports.insertTag = async (data) => {
   const existedTags = await findByName(data.name);
 
@@ -42,6 +54,4 @@ module.exports.deleteTag = async (data) => {
   } catch (e) {
     return false;
   }
-
-
 };
