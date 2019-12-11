@@ -8,3 +8,11 @@ module.exports.getDetails = async (id) => {
         return false;
     }
 };
+
+module.exports.getAll = async () => {
+    try{
+        return  await dbs.production.collection('users').find({isDeleted:false}).toArray();
+    }catch(e){
+        return false;
+    }
+};
