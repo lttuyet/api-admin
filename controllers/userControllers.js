@@ -4,19 +4,34 @@ const userTagModel = require("../models/user_tag");
 exports.getDetails = async (req, res) => {
     try {
         const _user = await userModel.getDetails(req.body.id);
-        const _tags = await userTagModel.findByUser(req.body.id);
 
-        if (!_user || !_tags) {
+        if (req.body.role === 'tutor') {
+            const _tags = await userTagModel.findByUser(req.body.id);
+
+            if (!_user || !_tags) {
+                return res.json({
+                    status: 507,
+                    message: "get details user failed"
+                });
+            }
+
             return res.json({
-                status: 507,
-                message: "get details user failed"
+                user: _user,
+                tags: _tags
+            });
+        } else {
+            if (!_user) {
+                return res.json({
+                    status: 507,
+                    message: "get details user failed"
+                });
+            }
+
+            return res.json({
+                user: _user
             });
         }
 
-        return res.json({
-            user: _user,
-            tags: _tags
-        });
 
     } catch (e) {
         return res.json({
@@ -28,7 +43,7 @@ exports.getDetails = async (req, res) => {
 
 exports.getAll = async (req, res) => {
     try {
-        const allUsers= await userModel.getAll();
+        const allUsers = await userModel.getAll();
 
         if (!allUsers) {
             return res.json({
