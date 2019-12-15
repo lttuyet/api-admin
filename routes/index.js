@@ -15,7 +15,7 @@ router.post("/inserttag", tagController.insertTag);
 router.post("/deletetag", tagController.deleteTag);
 
 //---------------User----------------
-router.get("/detailsuser", userController.getDetails);
+router.post("/detailsuser", userController.getDetails);
 
 router.get("/allusers", userController.getAll);
 
