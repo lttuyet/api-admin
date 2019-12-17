@@ -20,8 +20,17 @@ module.exports.insertAdmin = async (admin) => {
     address: admin.address,
     phone: admin.phone,
     email: admin.email,
-    password: hash
+    password: hash,
+    isDeleted: false
   };
 
   return await dbs.production.collection("admins").insertOne(newAdmin);
 };
+
+module.exports.getAllAdmin = async () =>{
+  try{
+    return await dbs.production.collection('admins').find({isDeleted: false}).toArray();
+  }catch(e){
+    return false;
+  }
+}
