@@ -25,4 +25,6 @@ router.get("/allusers", userController.getAll);
 //---------------Contract-----------------
 router.get("/allContracts", contractController.getAll);
 
+router.post("/detailscontract", contractController.getDetails);
+
 module.exports = router;

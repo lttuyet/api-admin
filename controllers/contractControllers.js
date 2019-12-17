@@ -12,3 +12,16 @@ exports.getAll = async (req, res) => {
         });
     }
 };
+
+exports.getDetails = async (req, res) => {
+    const contract = await contractModel.getDetails(req.body.id);
+
+    if (contract) {
+        return res.json(contract);
+    } else {
+        return res.json({
+            status:"failed",
+            message: "get detailed contract failed"
+        });
+    }
+};
