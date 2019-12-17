@@ -10,6 +10,8 @@ router.post("/insertadmin", adminController.insertAdmin);
 
 router.get("/alladmins", adminController.getAllAdmin);
 
+router.post("/deleteadmin", adminController.deleteAdmin);
+
 //---------------Tag----------------
 router.get("/alltags", tagController.getAll);
 

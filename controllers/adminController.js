@@ -38,3 +38,26 @@ exports.getAllAdmin = async (req, res) => {
       });
   }
 };
+
+exports.deleteAdmin = async (req, res) => {
+  try {
+    const result = await adminModel.deleteAdmin(req.body.id);
+
+    if (!result) {
+      return res.json({
+        status: "failed",
+        message: "delete admin failed"
+      });
+    }
+
+    return res.json({
+      status: "success",
+      message: "success"
+    });
+  }catch(e){
+      return res.json({
+          status: "failed",
+          message: "delete admin failed"
+      });
+  }
+};

@@ -34,3 +34,24 @@ module.exports.getAllAdmin = async () =>{
     return false;
   }
 }
+
+module.exports.getAllAdmin = async () =>{
+  try{
+    return await dbs.production.collection('admins').find({isDeleted: false}).toArray();
+  }catch(e){
+    return false;
+  }
+}
+
+module.exports.deleteAdmin = async (id) =>{
+  try{
+    return await dbs.production.collection('admins').updateOne({ _id: ObjectId(id) },
+    {
+      $set: {
+        isDeleted: true
+      }
+    });
+  }catch(e){
+    return false;
+  }
+}
