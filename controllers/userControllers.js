@@ -5,7 +5,7 @@ exports.getDetails = async (req, res) => {
     try {
         const _user = await userModel.getDetails(req.body.id);
 
-        if (req.body.role === 'tutor') {
+        if (_user.role === 'tutor') {
             const _tags = await userTagModel.findByUser(req.body.id);
 
             if (!_user || !_tags) {
