@@ -9,6 +9,19 @@ module.exports.getDetails = async (id) => {
     }
 };
 
+module.exports.block = async (id) => {
+    try {
+        return await dbs.production.collection('users').updateOne({ _id: ObjectId(id) },
+          {
+            $set: {
+              isBlocked: true
+            }
+          });
+      } catch (e) {
+        return false;
+      }
+};
+
 module.exports.getAll = async () => {
     try{
         return  await dbs.production.collection('users').find({isDeleted:false}).toArray();
