@@ -62,6 +62,29 @@ exports.block = async (req, res) => {
   }
 };
 
+exports.unblock = async (req, res) => {
+    try {
+      const _user = await userModel.unblock(req.body.id);
+  
+      if (!_user) {
+        return res.json({
+          status: "failed",
+          message: "unblock user failed"
+        });
+      }
+  
+      return res.json({
+          status: "success",
+          message: "success"
+      });
+    } catch (e) {
+      return res.json({
+          status: "failed",
+          message: "unblock user failed"
+      });
+    }
+  };
+
 exports.getAll = async (req, res) => {
   try {
     const allUsers = await userModel.getAll();

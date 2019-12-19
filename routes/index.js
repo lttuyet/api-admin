@@ -24,6 +24,8 @@ router.post("/detailsuser", userController.getDetails);
 
 router.post("/blockuser", userController.block);
 
+router.post("/unblockuser", userController.unblock);
+
 router.get("/allusers", userController.getAll);
 
 //---------------Contract-----------------

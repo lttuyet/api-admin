@@ -21,6 +21,18 @@ module.exports.block = async (id) => {
         return false;
       }
 };
+module.exports.unblock = async (id) => {
+    try {
+        return await dbs.production.collection('users').updateOne({ _id: ObjectId(id) },
+          {
+            $set: {
+              isBlocked: false
+            }
+          });
+      } catch (e) {
+        return false;
+      }
+};
 
 module.exports.getAll = async () => {
     try{
