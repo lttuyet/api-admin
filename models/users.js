@@ -14,7 +14,7 @@ module.exports.block = async (id) => {
         return await dbs.production.collection('users').updateOne({ _id: ObjectId(id) },
           {
             $set: {
-              isBlocked: true
+              isblocked: true
             }
           });
       } catch (e) {
@@ -26,7 +26,7 @@ module.exports.unblock = async (id) => {
         return await dbs.production.collection('users').updateOne({ _id: ObjectId(id) },
           {
             $set: {
-              isBlocked: false
+              isblocked: false
             }
           });
       } catch (e) {
