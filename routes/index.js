@@ -33,4 +33,9 @@ router.get("/allContracts", contractController.getAll);
 
 router.post("/detailscontract", contractController.getDetails);
 
+//---------------- Income ------------------
+
+router.get("/top10byincome",userController.tempTest);
+
+
 module.exports = router;

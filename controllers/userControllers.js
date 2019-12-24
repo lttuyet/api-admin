@@ -106,3 +106,26 @@ exports.getAll = async (req, res) => {
     });
   }
 };
+
+
+exports.tempTest = async(req,res) =>{
+  try {
+    const SUM = await userModel.findSumHoursByTutor();
+
+    if (!SUM) {
+      return res.json({
+        status: 507,
+        message: "get details user failed"
+      });
+    }
+
+    return res.json({
+      sum: SUM,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get all users failed"
+    });
+  }
+}
