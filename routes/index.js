@@ -35,7 +35,8 @@ router.post("/detailscontract", contractController.getDetails);
 
 //---------------- Income ------------------
 
-router.get("/top10byincome",userController.tempTest);
+router.get("/top10byincome",userController.top10byincome);
+router.get("/top10byincomeday",userController.top10byincomeday);
 
 
 module.exports = router;

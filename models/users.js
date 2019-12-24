@@ -42,54 +42,32 @@ module.exports.getAll = async () => {
     }
 };
 
-module.exports.findSumHoursByTutor = async () => {
-  const tutors = await dbs.production.collection('users').aggregate([
-    { $match: { role: "tutor", isDeleted: false, isblocked: false, isActivated: true } }, // match dùng để lọc dữ liệu theo các trường
+module.exports.findTop10ByIncome = async () => {
+  const tutors = await dbs.production.collection('contracts').aggregate([
+    { $match: { status: "Đã thanh toán" } }, // match dùng để lọc dữ liệu theo các trường
     {
         $lookup: {
-            from: 'contracts',
-            localField: '_id',
-            foreignField: 'tutor',
+            from: 'users',
+            localField: 'tutor',
+            foreignField: '_id',
             
             as: 'tutor_contracts'
         },
     }, // Lấy danh sách hợp đồng
-
     {
        
         $project: {
-            _id: "$_id",
-            name: "$name",
-            image: "$image",
-            intro: "$intro",
+          
+            name: "$tutor_contracts.name",
+            image: "$tutor_contracts.image",
+            hours: "$hours",
             price: "$price",
-            address: "$address",
-            status: "$tutor_contracts.status",
-            hours: "$tutor_contracts.hours",
-            
+            status: "$status",
+            total:{ $multiply: [ "$price", { $sum: "$hours" }]},
             
           
         }
     }, // Tính số hợp đồng
-    {
-      $match:{
-        status:"Đã thanh toán"
-      }
-    },{
-       
-      $project: {
-          _id: "$_id",
-          name: "$name",
-          image: "$image",
-          intro: "$intro",
-          price: "$price",
-          address: "$address",
-          status: "$tutor_contracts.status",
-          total:{ $multiply: [ "$price", { $sum: "$hours" }]},
-          
-        
-      }
-  },
 
     {
         $sort: { total: -1 }
@@ -99,12 +77,115 @@ module.exports.findSumHoursByTutor = async () => {
     },
     {
         $project: {
-            _id: "$_id",
+          
             name: "$name",
             image: "$image",
-            intro: "$intro",
             price: "$price",
-            address: "$address",
+            total: "$total"
+            
+        }
+    } // Chọn trường
+]).toArray();
+
+return tutors;
+};
+
+module.exports.findTop10ByIncome = async () => {
+  
+
+  const tutors = await dbs.production.collection('contracts').aggregate([
+    { $match: {  status: "Đã thanh toán"}}, // match dùng để lọc dữ liệu theo các trường
+    {
+        $lookup: {
+            from: 'users',
+            localField: 'tutor',
+            foreignField: '_id',
+            
+            as: 'tutor_contracts'
+        },
+    }, // Lấy danh sách hợp đồng
+    {
+       
+        $project: {
+          
+            name: "$tutor_contracts.name",
+            image: "$tutor_contracts.image",
+            hours: "$hours",
+            price: "$price",
+            status: "$status",
+            total:{ $multiply: [ "$price", { $sum: "$hours" }]},
+            
+          
+        }
+    }, // Tính số hợp đồng
+
+    {
+        $sort: { total: -1 }
+    }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+    {
+        $limit: 5
+    },
+    {
+        $project: {
+          
+            name: "$name",
+            image: "$image",
+            price: "$price",
+            total: "$total"
+            
+        }
+    } // Chọn trường
+]).toArray();
+
+return tutors;
+};
+
+module.exports.findTop10ByIncomeDay = async () => {
+  let today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const yyyy = today.getFullYear();
+    
+    today = `${dd  }/${  mm  }/${  yyyy}`;
+
+  const tutors = await dbs.production.collection('contracts').aggregate([
+    { $match: {  status: "Đã thanh toán", paidDate: today  }}, // match dùng để lọc dữ liệu theo các trường
+    {
+        $lookup: {
+            from: 'users',
+            localField: 'tutor',
+            foreignField: '_id',
+            
+            as: 'tutor_contracts'
+        },
+    }, // Lấy danh sách hợp đồng
+    {
+       
+        $project: {
+          
+            name: "$tutor_contracts.name",
+            image: "$tutor_contracts.image",
+            hours: "$hours",
+            price: "$price",
+            status: "$status",
+            total:{ $multiply: [ "$price", { $sum: "$hours" }]},
+            
+          
+        }
+    }, // Tính số hợp đồng
+
+    {
+        $sort: { total: -1 }
+    }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+    {
+        $limit: 5
+    },
+    {
+        $project: {
+          
+            name: "$name",
+            image: "$image",
+            price: "$price",
             total: "$total"
             
         }

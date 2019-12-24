@@ -108,24 +108,46 @@ exports.getAll = async (req, res) => {
 };
 
 
-exports.tempTest = async(req,res) =>{
+exports.top10byincome = async(req,res) =>{
   try {
-    const SUM = await userModel.findSumHoursByTutor();
+    const _toplist = await userModel.findTop10ByIncome();
 
-    if (!SUM) {
+    if (!_toplist) {
       return res.json({
         status: 507,
-        message: "get details user failed"
+        message: "get top user failed"
       });
     }
 
     return res.json({
-      sum: SUM,
+      toplist: _toplist,
     });
   } catch (e) {
     return res.json({
       status: 508,
-      message: "get all users failed"
+      message: "get top users failed"
+    });
+  }
+}
+
+exports.top10byincomeday = async(req,res) =>{
+  try {
+    const _toplist = await userModel.findTop10ByIncomeDay();
+
+    if (!_toplist) {
+      return res.json({
+        status: 507,
+        message: "get top user failed"
+      });
+    }
+
+    return res.json({
+      toplist: _toplist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top users failed"
     });
   }
 }
