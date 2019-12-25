@@ -217,3 +217,109 @@ exports.top10byincomeyear = async(req,res) =>{
     });
   }
 }
+
+exports.top10incomebytag = async(req,res) =>{
+  try {
+    const _taglist = await userModel.findTop10IncomeByTag();
+
+    if (!_taglist) {
+      return res.json({
+        status: 507,
+        message: "get top tags failed"
+      });
+    }
+
+    return res.json({
+      taglist: _taglist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top tags failed"
+    });
+  }
+}
+exports.top10incomebytagbyday = async(req,res) =>{
+  try {
+    const _taglist = await userModel.findTop10IncomeByTagByDay();
+
+    if (!_taglist) {
+      return res.json({
+        status: 507,
+        message: "get top tags failed"
+      });
+    }
+
+    return res.json({
+      taglist: _taglist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top tags failed"
+    });
+  }
+}
+exports.top10incomebytagbyweek = async(req,res) =>{
+  try {
+    const _taglist = await userModel.findTop10IncomeByTagByWeek();
+
+    if (!_taglist) {
+      return res.json({
+        status: 507,
+        message: "get top tags failed"
+      });
+    }
+
+    return res.json({
+      taglist: _taglist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top tags failed"
+    });
+  }
+}
+exports.top10incomebytagbymonth = async(req,res) =>{
+  try {
+    const _taglist = await userModel.findTop10IncomeByTagByMonth();
+
+    if (!_taglist) {
+      return res.json({
+        status: 507,
+        message: "get top tags failed"
+      });
+    }
+
+    return res.json({
+      taglist: _taglist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top tags failed"
+    });
+  }
+}
+exports.top10incomebytagbyyear = async(req,res) =>{
+  try {
+    const _taglist = await userModel.findTop10IncomeByTagByYear();
+
+    if (!_taglist) {
+      return res.json({
+        status: 507,
+        message: "get top tags failed"
+      });
+    }
+
+    return res.json({
+      taglist: _taglist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top tags failed"
+    });
+  }
+}

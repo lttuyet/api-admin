@@ -41,5 +41,11 @@ router.get("/top10byincomemonth",userController.top10byincomemonth);
 router.get("/top10byincomeyear",userController.top10byincomeyear);
 router.get("/top10byincomeweek",userController.top10byincomeweek);
 
+router.get("/top10incomebytag",userController.top10incomebytag);
+router.get("/top10incomebytagbyday",userController.top10incomebytagbyday);
+router.get("/top10incomebytagbyweek",userController.top10incomebytagbyweek);
+router.get("/top10incomebytagbymonth",userController.top10incomebytagbymonth);
+router.get("/top10incomebytagbyyear",userController.top10incomebytagbyyear);
+
 
 module.exports = router;

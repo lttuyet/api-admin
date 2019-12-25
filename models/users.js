@@ -492,3 +492,440 @@ module.exports.findTop10ByIncomeYear = async () => {
 
   return tutors;
 };
+
+module.exports.findTop10IncomeByTag = async () => {
+  const tags = await dbs.production
+    .collection("contracts")
+    .aggregate([
+      { $match: { status: "Đã thanh toán" } }, // match dùng để lọc dữ liệu theo các trường
+      {
+        $lookup: {
+          from: "tags",
+          localField: "tagStudy",
+          foreignField: "_id",
+
+          as: "tag_contracts"
+        }
+      }, // Lấy danh sách hợp đồng
+      {
+        $project: {
+          id: "$tag_contracts._id",
+          total: { $multiply: ["$price", "$hours" ] }
+        }
+      }, // Tính số hợp đồng
+      {
+        $group:
+          {
+            _id: "$id",
+            totalAmount: { $sum:  "$total"  },         
+          }
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "_id",
+          foreignField: "_id",
+
+          as: "tag"
+        }
+      },
+      {
+        $project: {
+          
+          name: "$tag.name",
+         
+          total: "$totalAmount",
+        }
+      }, 
+
+      {
+        $sort: { total: -1 }
+      }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+      {
+        $limit: 5
+      },
+      // Chọn trường
+    ])
+    .toArray();
+
+  return tags;
+};
+
+module.exports.findTop10IncomeByTagByDay = async () => {
+  let today = new Date();
+  const dd = String(today.getDate()).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+  const yyyy = today.getFullYear();
+
+  today = `${yyyy}-${mm}-${dd}`;
+
+  const tags = await dbs.production
+    .collection("contracts")
+    .aggregate([
+      { $match: { status: "Đã thanh toán", paidDate: today } }, // match dùng để lọc dữ liệu theo các trường
+      {
+        $lookup: {
+          from: "tags",
+          localField: "tagStudy",
+          foreignField: "_id",
+
+          as: "tag_contracts"
+        }
+      }, // Lấy danh sách hợp đồng
+      {
+        $project: {
+          id: "$tag_contracts._id",
+          total: { $multiply: ["$price", "$hours" ] }
+        }
+      }, // Tính số hợp đồng
+      {
+        $group:
+          {
+            _id: "$id",
+            totalAmount: { $sum:  "$total"  },         
+          }
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "_id",
+          foreignField: "_id",
+
+          as: "tag"
+        }
+      },
+      {
+        $project: {
+          
+          name: "$tag.name",
+          image: "$tag.image",
+          total: "$totalAmount",
+        }
+      }, 
+
+      {
+        $sort: { total: -1 }
+      }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+      {
+        $limit: 5
+      },
+       // Chọn trường
+    ])
+    .toArray();
+
+  return tags;
+};
+
+module.exports.findTop10IncomeByTagByWeek = async () => {
+  let today = new Date();
+  const dd = String(today.getDate()).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+  const yyyy = today.getFullYear();
+
+  
+
+  today = `${yyyy}-${mm}-${dd}`;
+  const _year = 2018;
+  console.log(new Date("2019-10-10"));
+  const tags = await dbs.production
+    .collection("contracts")
+    .aggregate([
+      { $match: { status: "Đã thanh toán" } }, // match dùng để lọc dữ liệu theo các trường
+
+      {
+        $lookup: {
+          from: "tags",
+          let: {
+            w1: {
+              $week: {
+                date: {
+                  $dateFromString: {
+                    dateString: "$paidDate"
+
+                  }
+                }
+              }
+            },
+            w2: {
+              $week: {
+                date: {
+                  $dateFromString: {
+                    dateString: today
+
+                  }
+                }
+              }
+            },
+            tag_id: "$tagStudy",
+            paid:"$status"
+          },
+
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$_id", "$$tag_id"]
+                    },
+                    {
+                      $eq: ["$$w1", "$$w2"]
+                    },
+                    
+                  ]
+                }
+              }
+            }
+          ],
+          as: "tag_contracts"
+        }
+      }, // Lấy danh sách hợp đồng
+      {$match:{
+        tag_contracts: {$ne:[]}
+      }},
+      {
+        $project: {
+          id: "$tag_contracts._id",
+          total: { $multiply: ["$price", "$hours" ] },
+          
+        }
+      }, // Tính số hợp đồng
+      {
+        $group:
+          {
+            _id: "$id",
+            totalAmount: { $sum:  "$total"  },         
+          }
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "_id",
+          foreignField: "_id",
+
+          as: "tag"
+        }
+      },
+      {
+        $project: {
+          
+          name: "$tag.name",
+          total: "$totalAmount",
+        }
+      }, 
+
+
+      {
+        $sort: { total: -1 }
+      }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+      {
+        $limit: 5
+      },
+      // Chọn trường
+    ])
+    .toArray();
+
+  return tags;
+};
+
+module.exports.findTop10IncomeByTagByMonth = async () => {
+  let today = new Date();
+  const dd = String(today.getDate()).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+  const yyyy = today.getFullYear();
+
+  today = `${yyyy}-${mm}-${dd}`;
+  const _year = 2018;
+  console.log(new Date("2019-10-10"));
+  const tags = await dbs.production
+    .collection("contracts")
+    .aggregate([
+      { $match: { status: "Đã thanh toán" } }, // match dùng để lọc dữ liệu theo các trường
+
+      {
+        $lookup: {
+          from: "tags",
+          let: {
+            y: {
+              $month: {
+                date: {
+                  $dateFromString: {
+                    dateString: "$paidDate"
+
+                  }
+                }
+              }
+            },
+            tag_id: "$tagStudy",
+            paid:"$status"
+          },
+
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$_id", "$$tag_id"]
+                    },
+                    {
+                      $eq: ["$$y", parseInt(mm)]
+                    },
+                    
+                  ]
+                }
+              }
+            }
+          ],
+          as: "tag_contracts"
+        }
+      }, // Lấy danh sách hợp đồng
+      {$match:{
+        tag_contracts: {$ne:[]}
+      }},
+      {
+        $project: {
+          
+          id: "$tag_contracts._id",
+          total: { $multiply: ["$price", "$hours" ] },
+          
+        }
+      }, // Tính số hợp đồng
+      {
+        $group:
+          {
+            _id: "$id",
+            totalAmount: { $sum:  "$total"  },         
+          }
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "_id",
+          foreignField: "_id",
+
+          as: "tag"
+        }
+      },
+      {
+        $project: {
+          
+          name: "$tag.name",
+          total: "$totalAmount",
+        }
+      }, 
+
+      {
+        $sort: { total: -1 }
+      }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+      {
+        $limit: 5
+      },
+       // Chọn trường
+    ])
+    .toArray();
+
+  return tags;
+};
+
+module.exports.findTop10IncomeByTagByYear = async () => {
+  let today = new Date();
+  const dd = String(today.getDate()).padStart(2, "0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // January is 0!
+  const yyyy = today.getFullYear();
+
+  today = `${yyyy}-${mm}-${dd}`;
+  
+  
+  const tags = await dbs.production
+    .collection("contracts")
+    .aggregate([
+      { $match: { status: "Đã thanh toán" } }, // match dùng để lọc dữ liệu theo các trường
+
+      {
+        $lookup: {
+          from: "tags",
+          let: {
+            y: {
+              $year: {
+                date: {
+                  $dateFromString: {
+                    dateString: "$paidDate"
+
+                  }
+                }
+              }
+            },
+            tag_id: "$tagStudy",
+            paid:"$status"
+          },
+
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$_id", "$$tag_id"]
+                    },
+                    {
+                      $eq: ["$$y", parseInt(yyyy)]
+                    },
+                    
+                  ]
+                }
+              }
+            }
+          ],
+          as: "tag_contracts"
+        }
+      }, // Lấy danh sách hợp đồng
+      {$match:{
+        tag_contracts: {$ne:[]}
+      }},
+      {
+        $project: {
+          
+          id: "$tag_contracts._id",
+         
+          total: { $multiply: ["$price",  "$hours" ] },
+         
+        }
+      }, // Tính số hợp đồng
+      {
+        $group:
+          {
+            _id: "$id",
+            totalAmount: { $sum:  "$total"  },         
+          }
+      },
+      {
+        $lookup: {
+          from: "tags",
+          localField: "_id",
+          foreignField: "_id",
+
+          as: "tag"
+        }
+      },
+      {
+        $project: {
+          
+          name: "$tag.name",
+          total: "$totalAmount",
+        }
+      }, 
+
+
+      {
+        $sort: { total: -1 }
+      }, // Sắp xếp theo phổ biến // bỏ qua skip tutors
+      {
+        $limit: 5
+      },
+      // Chọn trường
+    ])
+    .toArray();
+
+  return tags;
+};
