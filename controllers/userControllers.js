@@ -151,3 +151,69 @@ exports.top10byincomeday = async(req,res) =>{
     });
   }
 }
+
+exports.top10byincomeweek = async(req,res) =>{
+  try {
+    const _toplist = await userModel.findTop10ByIncomeWeek();
+
+    if (!_toplist) {
+      return res.json({
+        status: 507,
+        message: "get top user failed"
+      });
+    }
+
+    return res.json({
+      toplist: _toplist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top users failed"
+    });
+  }
+}
+
+exports.top10byincomemonth = async(req,res) =>{
+  try {
+    const _toplist = await userModel.findTop10ByIncomeMonth();
+
+    if (!_toplist) {
+      return res.json({
+        status: 507,
+        message: "get top user failed"
+      });
+    }
+
+    return res.json({
+      toplist: _toplist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top users failed"
+    });
+  }
+}
+
+exports.top10byincomeyear = async(req,res) =>{
+  try {
+    const _toplist = await userModel.findTop10ByIncomeYear();
+
+    if (!_toplist) {
+      return res.json({
+        status: 507,
+        message: "get top user failed"
+      });
+    }
+
+    return res.json({
+      toplist: _toplist,
+    });
+  } catch (e) {
+    return res.json({
+      status: 508,
+      message: "get top users failed"
+    });
+  }
+}
