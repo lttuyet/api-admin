@@ -16,7 +16,7 @@ exports.findByName = findByName;
 
 const findById = async (id) => {
   try{
-    const res = await dbs.production.collection('tags').findOne({_id:ObjectId(id)});
+    const res = await dbs.production.collection('tags').findOne({_id:ObjectId(id),isDeleted: false});
 
     return res;
   }catch(e){
